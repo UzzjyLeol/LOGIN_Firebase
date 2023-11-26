@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/login_ui/color_set.dart';
-import 'package:flutter_application_12/login_ui/contact.dart';
-import 'package:flutter_application_12/login_ui/float_background.dart';
-import 'package:flutter_application_12/login_ui/get_infor.dart';
-import 'package:flutter_application_12/login_ui/login_guide.dart';
-import 'package:flutter_application_12/login_ui/submit_button.dart';
+import 'package:flutter_application_12/login_ui/home.dart';
+import 'package:flutter_application_12/login_ui/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: const FirebaseOptions(apiKey: 'AIzaSyCrTswYZyl7XH5Ie9LPscWPz6o0zAOfarE', appId: '1:88190219884:android:4947a6f330766bb376ca49', messagingSenderId: '88190219884', projectId: 'loginapp-b59e2'));
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
@@ -18,74 +21,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Container(
-          // Set background color và gradient
-          decoration: const BoxDecoration(
-            gradient:LinearGradient(
-              colors: [ColorSet.gradientColor1,ColorSet.gradientColor2],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight
-            )
-          ),         
-          child: Stack(
-            children: [
-              const FloatingBackground(),
-              // Tạo Row chứa khối Login và 2 khối SizedBox trống ở 2 bên
-              Row(
-                children: [
-                  // First SizedBox
-                  const Expanded(
-                    flex: 2,
-                    child:
-                      SizedBox(width: double.infinity,)
-                    ),
-
-                  // Khối Login
-                  Expanded(
-                    flex: 3,
-                    child: Container(
-                      margin:const EdgeInsets.only(top: 120,bottom: 42),
-                      color: Colors.black87,
-                      child: 
-                      // Tạo column chứa 6 Block
-                        const Column(
-                          children: [
-                            //Title container
-                            LoginTitle(),
-
-                            //Guide container
-                            LoginGuide(),
-
-                            //Get Infor
-                            GetInfor(),
-
-                            //TextButton ->Forgot
-                            ForgotPasswordButton(),
-
-                            //Submit ElevatedButton ->Login
-                            LoginButton(),
-
-                            SizedBox(height: 34),
-
-                            //Contact Row
-                            Contact()
-                          ],
-                        ),
-                    )
-                  ),
-
-                  // Second SizedBox
-                  const Expanded(
-                    flex: 2,
-                    child:
-                      SizedBox(width: double.infinity)
-                    )
-                ],
-              )
-            ],
-          ),
-        )
+      title: 'Firebase Authentication',
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const HomePage();
+          } else {
+            return const LoginPage();
+          }
+        },
       ),
     );
   }
