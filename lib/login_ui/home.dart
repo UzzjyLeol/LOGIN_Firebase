@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.black,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Center(
           child: ElevatedButton(
             onPressed: (){

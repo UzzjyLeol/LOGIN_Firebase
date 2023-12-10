@@ -7,10 +7,10 @@ class LoginGuide extends StatelessWidget {
   Widget build(BuildContext context) {
     return
       Container(
-        padding: const EdgeInsets.fromLTRB(6, 6, 6, 24),
+        padding: const EdgeInsets.fromLTRB(6, 6, 6, 16),
         child: 
           const Text(
-            'Please enter your login and password!',
+            'Please enter your email and password!',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/auth.dart';
 import 'package:flutter_application_12/login_ui/ui/color_set.dart';
 import 'package:flutter_application_12/login_ui/ui/contact.dart';
 import 'package:flutter_application_12/login_ui/ui/float_background.dart';
 import 'package:flutter_application_12/login_ui/ui/login_guide.dart';
-import 'package:flutter_application_12/login_ui/ui/submit_button.dart';
+import 'package:flutter_application_12/firebase_services.dart';
+import 'package:flutter_application_12/register.dart';
+import 'package:flutter_application_12/reset_password.dart';
+
 
 
 class LoginPage extends StatefulWidget {
@@ -14,28 +16,37 @@ class LoginPage extends StatefulWidget {
   LoginPageState createState() => LoginPageState();
 }
 
+
 class LoginPageState extends State<LoginPage> {
-  final bool _isLogin = false;
+
+  bool passwordVisible = false;
   bool _loading = false;
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  RegExp passValid = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
+  bool validatePassword(String pass) {
+    String password = pass.trim();
+
+    if (passValid.hasMatch(password)) {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
   handleSubmit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return ;
     final email = emailController.value.text;
     final password = passwordController.value.text;
 
     setState(() {
       _loading = true;
     });
-
-    if (_isLogin) {
-      await Auth().signInWithEmailAndPassword(email, password);
-    } else {
-      await Auth().registerWithEmailAndPassword(email, password);
-    }
-
+    await FirebaseAuthService().signInWithEmailAndPassword(email, password);
     setState(() {
       _loading = false;
     });
@@ -94,14 +105,14 @@ class LoginPageState extends State<LoginPage> {
                                 //Get Infor
                                 Column(
                                   children: [
-                                                        //Khối Uername
+                                                        //Khối Username
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 20,left: 140,right: 140),
+                                      padding: const EdgeInsets.only(top: 12,left: 140,right: 140),
                                       child:  
                                       TextFormField(
                                         controller: emailController,
                                         validator: (value) {
-                                          if (value == null || value.isEmpty) {
+                                          if (value == null || value.isEmpty == true) {
                                             return "Please enter your email";
                                           } else {
                                             return null;
@@ -128,7 +139,9 @@ class LoginPageState extends State<LoginPage> {
                                             color: ColorSet.hintText_,
                                             letterSpacing: 1,
                                             fontSize: 18
-                                          )
+                                          ),
+                                          suffixIcon: Icon(Icons.email,
+                                          color: Theme.of(context).primaryColorDark,)
                                         ),
                                       ),
                                     ),
@@ -139,10 +152,14 @@ class LoginPageState extends State<LoginPage> {
                                       child: TextFormField(
                                         controller: passwordController,
                                         validator: (value) {
-                                          if (value == null || value.isEmpty) {
+                                          if (value == null || value.isEmpty == true) {
                                             return 'Please enter your password';
                                           } else {
-                                            return null;
+                                            if (validatePassword(value)) {
+                                              return null;
+                                            } else {
+                                              return 'Password must contain Capital, Small letter, Number and Special!';
+                                            }
                                           }
                                         },
                                         textAlign: TextAlign.center,
@@ -150,7 +167,7 @@ class LoginPageState extends State<LoginPage> {
                                           fontWeight: FontWeight.w400,
                                           color: Colors.white60
                                         ),
-                                        obscureText: true,
+                                        obscureText: !passwordVisible,
                                         decoration: InputDecoration(
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(30),
@@ -165,7 +182,16 @@ class LoginPageState extends State<LoginPage> {
                                             color: ColorSet.hintText_,
                                             letterSpacing: 1,
                                             fontSize: 18
-                                          )
+                                          ),
+                                          suffixIcon: IconButton(
+                                            onPressed: (){
+                                              setState(() {
+                                                passwordVisible = !passwordVisible;
+                                              });
+                                            },
+                                            icon: passwordVisible? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                                            color: Theme.of(context).primaryColorDark,
+                                            ),
                                         ),
                                       ),
                                     ),
@@ -173,7 +199,57 @@ class LoginPageState extends State<LoginPage> {
                                 ),
 
                                 //TextButton ->Forgot
-                                const ForgotPasswordButton(),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 18),
+                                  child: TextButton(
+                                    onPressed: (){
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => const ForgotPasswordPage()
+                                        ),
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: const Color.fromARGB(255, 94, 92, 92),
+                                    ),
+                                    child: 
+                                      const Text('Forgot password?',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white54,
+                                        decoration: TextDecoration.underline,
+                                        wordSpacing: 1,
+                                        letterSpacing: 2
+                                      ),
+                                    )
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16,bottom: 16),
+                                  child: TextButton(
+                                    onPressed: (){
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => const SignUpPage()
+                                        )
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.black
+                                      ),
+                                    child: 
+                                      const Text('Create Account',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white54,
+                                        decoration: TextDecoration.underline,
+                                        wordSpacing: 1,
+                                        letterSpacing: 2
+                                      ),
+                                    )
+                                  ),
+                                ),
 
                                 //Submit ElevatedButton ->Login
                                 OutlinedButton(
@@ -194,9 +270,7 @@ class LoginPageState extends State<LoginPage> {
                                               color: Colors.white,
                                               strokeWidth: 2,
                                             ),
-                                          ) : Text(
-                                            _isLogin? 'Login' : 'Register'
-                                          ),
+                                          ) : const Text('Login',style: TextStyle(fontSize: 20),),
                                         )
                                       ),
                                 const SizedBox(height: 34),

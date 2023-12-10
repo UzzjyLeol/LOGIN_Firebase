@@ -15,4 +15,6 @@ class ColorSet {
 
   static const Color hintText_ = Color.fromARGB(255, 154, 146, 146);
 
+  static const Color normalText = Color.fromARGB(255, 189, 187, 187);
+
 }
