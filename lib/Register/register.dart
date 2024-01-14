@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/login_ui/home.dart';
-import 'package:flutter_application_12/login_ui/ui/color_set.dart';
-import 'package:flutter_application_12/firebase_services.dart';
+import 'package:flutter_application_12/Login/login_event.dart';
+import 'package:flutter_application_12/Login/login_state.dart';
+import 'package:flutter_application_12/Register/register_bloc.dart';
+import 'package:flutter_application_12/Login/login_ui/home.dart';
+import 'package:flutter_application_12/Login/login_ui/ui/color_set.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 
@@ -17,7 +20,7 @@ class SignUpPage extends StatefulWidget {
 
 class SignUpPageState extends State<SignUpPage> {
 
-  bool passwordVisible = false;
+  bool passwordVisible1 = false;
   bool loading = false;
   bool isSubmit = false;
   final TextEditingController emailController = TextEditingController();
@@ -34,39 +37,6 @@ class SignUpPageState extends State<SignUpPage> {
     }
 
   }
-
-  jumpintoHomePage() async {
-    setState(() {
-      isSubmit = true;
-    });
-
-    if (isSubmit) {
-      Navigator.push(context, MaterialPageRoute(
-        builder: (context) => const HomePage()
-        )
-      );
-    }
-    setState(() {
-      isSubmit = false;
-    });
-  }
-
-
-  handleSubmit() async {
-    final email = emailController.value.text;
-    final password = passwordController.value.text;
-    setState(() {
-      loading = true;
-    });
-
-    await FirebaseAuthService().signUpWithEmailAndPassword(email, password);
-    jumpintoHomePage();
-    setState(() {
-      loading = false;
-    });
-
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +107,7 @@ class SignUpPageState extends State<SignUpPage> {
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter your password';
-                                          } else {
+                                          } else {  
                                             if (validatePassword(value)) {
                                               return null;
                                             } else {
@@ -150,7 +120,7 @@ class SignUpPageState extends State<SignUpPage> {
                                           fontWeight: FontWeight.w400,
                                           color: Colors.white60
                                         ),
-                                        obscureText: !passwordVisible,
+                                        obscureText: !passwordVisible1,
                                         decoration: InputDecoration(
                                           enabledBorder: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(30),
@@ -168,36 +138,54 @@ class SignUpPageState extends State<SignUpPage> {
                                           ),
                                           suffixIcon: IconButton(
                                             onPressed: (){
-                                              setState(() {
-                                                passwordVisible = !passwordVisible;
-                                              });
+                                              // setState(() {
+                                              //   passwordVisible = !passwordVisible;
+                                              // });
                                             },
-                                            icon: passwordVisible? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
+                                            icon: passwordVisible1? const Icon(Icons.visibility) : const Icon(Icons.visibility_off),
                                             color: Theme.of(context).primaryColorDark,
                                             ),
                                         ),
                                       ),
                                     ),
                                     const SizedBox(height: 24,),
-                                    ElevatedButton(
-                                      onPressed: (){
-                                        handleSubmit();
+                                    
+                                    BlocListener<RegisterBloc, LoginState>(
+                                      listener: (context, state) {
+                                        if (state is Submitted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                            content: Text(
+                                              'Sign up successful!'
+                                              ),
+                                            ),
+                                          );
+                                          Navigator.push(context, MaterialPageRoute(
+                                            builder: (context) => const HomePage()
+                                            ),
+                                          );
+                                        }
                                       },
-                                      style: ElevatedButton.styleFrom(
-                                        foregroundColor: Colors.black,
-                                      ),
-                                      child:loading? 
-                                        const SizedBox(
-                                          height: 24,
-                                          width: 24,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2.0,
-                                          ),
+                                      child: ElevatedButton(
+                                        onPressed: (){
+                                          BlocProvider.of<RegisterBloc>(context).add(
+                                            SignUpRequested(email: emailController.text, password: passwordController.text));
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.black,
+                                        ),
+                                        child:loading? 
+                                          const SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.0,
+                                            ),
+                                          )
+                                          : const Text('Submit',
+                                          style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600,color: ColorSet.normalText),
                                         )
-                                        : const Text('Submit',
-                                        style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600,color: ColorSet.normalText),
-                                      )
+                                      ),
                                     )
                                   ],
                                 ),

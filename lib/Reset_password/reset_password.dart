@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/login_ui/ui/color_set.dart';
-import 'package:flutter_application_12/firebase_services.dart';
+import 'package:flutter_application_12/Login/login_event.dart';
+import 'package:flutter_application_12/Reset_password/reset_password_bloc.dart';
+import 'package:flutter_application_12/Login/login_ui/ui/color_set.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -12,19 +14,7 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
-  
-  bool isResetPassword = false;
   final TextEditingController forgotPasswordController = TextEditingController();
-
-  handleSubmit() async {
-    final email = forgotPasswordController.value.text;
-    if (isResetPassword == true) {
-      await FirebaseAuthService().resetPassword(email: email);
-      return 'Request sent to your email, please check!';
-    } else {
-      return null;
-    }
-  }
   
   @override
   Widget build(BuildContext context) {
@@ -77,10 +67,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           const SizedBox(height: 24,),
                           ElevatedButton(
                             onPressed: (){
-                              setState(() {
-                                isResetPassword = !isResetPassword;
-                              });
-                              handleSubmit();
+                              BlocProvider.of<ResetPasswordBloc>(context).add(ResetPasswordRequested(email: forgotPasswordController.text));
                             },
                             style: ElevatedButton.styleFrom(
                               foregroundColor: const Color.fromARGB(255, 0, 0, 0),
