@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/Register/register_bloc.dart';
-import 'package:flutter_application_12/auth_repository.dart';
-import 'package:flutter_application_12/Login/login_bloc.dart';
+import 'package:flutter_application_12/Bloc/authentication_bloc.dart';
+import 'package:flutter_application_12/Bloc/login_bloc.dart';
+import 'package:flutter_application_12/Bloc/register_bloc.dart';
+import 'package:flutter_application_12/Bloc/reset_password_bloc.dart';
+import 'package:flutter_application_12/Events/authentication_event.dart';
+import 'package:flutter_application_12/Login/login_ui/home.dart';
 import 'package:flutter_application_12/Login/login_ui/login.dart';
+import 'package:flutter_application_12/Repositories/auth_repository.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'States/authentication_state.dart';
 
 
 void main() async {
@@ -14,43 +20,47 @@ void main() async {
     appId: '1:88190219884:android:4947a6f330766bb376ca49',
     messagingSenderId: '88190219884',
     projectId: 'loginapp-b59e2'));
-  await Firebase.initializeApp();
-
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final AuthRepository _authRepository= AuthRepository();
 
   @override
   Widget build(BuildContext context) {
-    return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider(
-          create: (context) => AuthRepository(),
-        ),
-      ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => LoginBloc(
-              authRepo: RepositoryProvider.of<AuthRepository>(context),
-            ),
-          ),
-          BlocProvider(
-            create: (context) => RegisterBloc(
-              authRepo: RepositoryProvider.of<AuthRepository>(context),
-            ),
-          ),
-        ],
-        child: const MaterialApp(
+    return MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: LoginPage(),    
-        ),
-      ),
+          home: 
+            MultiBlocProvider(providers:
+            [
+              BlocProvider(
+                create: (context) {
+                  final authenticationBloc = AuthenticationLoginBloc(authRepository: _authRepository);
+                  authenticationBloc.add(AuthenticationEventInit());
+                  return authenticationBloc;
+                }
+              ),
+              BlocProvider(create: (context) => RegisterBloc(authRepo: _authRepository)),
+              BlocProvider(create: (context) => ResetPasswordBloc(authRepo: _authRepository)),
+              BlocProvider(create: (context) => LoginBloc(authRepo: _authRepository)),
+            ],
+            child: BlocBuilder<AuthenticationLoginBloc, AuthenticationState>(
+              builder: (context, authenState) {
+                if (authenState is AuthenticationStateSuccess) {
+                  return const HomePage();
+                } else if (authenState is AuthenticationStateInit) {
+                  return BlocProvider<LoginBloc>(
+                    create: (context) => LoginBloc(authRepo: _authRepository),
+                    child: LoginPage(authRepository: _authRepository,),
+                  );
+                } else {
+                  return const Text('NOTHING');
+                }
+              },
+            )
+          ),
     );
-
-
   }
 }

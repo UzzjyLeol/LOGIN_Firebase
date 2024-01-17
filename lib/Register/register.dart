@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/Login/login_event.dart';
-import 'package:flutter_application_12/Login/login_state.dart';
-import 'package:flutter_application_12/Register/register_bloc.dart';
+import 'package:flutter_application_12/Events/register_event.dart';
+import 'package:flutter_application_12/Bloc/register_bloc.dart';
 import 'package:flutter_application_12/Login/login_ui/home.dart';
 import 'package:flutter_application_12/Login/login_ui/ui/color_set.dart';
+import 'package:flutter_application_12/States/register_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -104,16 +104,8 @@ class SignUpPageState extends State<SignUpPage> {
                                       padding: const EdgeInsets.fromLTRB(400, 12, 400, 12),
                                       child: TextFormField(
                                         controller: passwordController,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter your password';
-                                          } else {  
-                                            if (validatePassword(value)) {
-                                              return null;
-                                            } else {
-                                              return 'Password must contain Capital, Small letter, Number and Special!';
-                                            }
-                                          }
+                                        validator: (_){
+                                          return null;
                                         },
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
@@ -149,10 +141,10 @@ class SignUpPageState extends State<SignUpPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 24,),
-                                    
-                                    BlocListener<RegisterBloc, LoginState>(
-                                      listener: (context, state) {
-                                        if (state is Submitted) {
+
+                                    BlocListener<RegisterBloc, RegisterState>(
+                                      listener: (context, registerState) {
+                                        if (registerState.isSuccess) {
                                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                                             content: Text(
                                               'Sign up successful!'
@@ -168,7 +160,7 @@ class SignUpPageState extends State<SignUpPage> {
                                       child: ElevatedButton(
                                         onPressed: (){
                                           BlocProvider.of<RegisterBloc>(context).add(
-                                            SignUpRequested(email: emailController.text, password: passwordController.text));
+                                            SignUpWithEmailAndPassword(email: emailController.text, password: passwordController.text));
                                         },
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors.black,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_12/Login/login_bloc.dart';
-import 'package:flutter_application_12/Login/login_event.dart';
+import 'package:flutter_application_12/Bloc/login_bloc.dart';
+import 'package:flutter_application_12/Events/login_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 

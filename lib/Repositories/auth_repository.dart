@@ -20,15 +20,8 @@ class AuthRepository {
     }
   }
 
-  Future<void> signIn({required String email, required String password}) async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password
-      );
-    } on FirebaseAuthException catch(e) {
-      throw Exception(e.toString());
-    }
+  Future<UserCredential> signIn({required String email, required String password}) async {
+    return await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> signOut() async {
@@ -42,5 +35,12 @@ class AuthRepository {
       throw Exception(e.toString());
     }
   }
+
+  Future<bool> isSignedIn() async {
+    return FirebaseAuth.instance.currentUser != null;
+  }
   
+  Future<User> getUser() async {
+    return FirebaseAuth.instance.currentUser!;
+  }
 }
