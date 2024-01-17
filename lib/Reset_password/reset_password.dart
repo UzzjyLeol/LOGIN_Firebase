@@ -21,9 +21,9 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
   
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ResetPasswordBloc, ResetPasswordState>(
-      builder: (context, state) {
-        return  Scaffold(
+    return BlocProvider<ResetPasswordBloc>(
+      create: (_) => ResetPasswordBloc(),
+      child: Scaffold(
           appBar: AppBar(
             title: const Text('Reset Password'),
           ),
@@ -99,8 +99,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     )
                   ),
             )
-        );
-      },
+        ),
     );
   }
 }
