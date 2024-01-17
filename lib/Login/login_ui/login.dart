@@ -18,10 +18,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class LoginPage extends StatefulWidget {
-  final AuthRepository _authRepository;
   const LoginPage({Key? key, required AuthRepository authRepository}):
   assert(authRepository != null),
-  _authRepository = authRepository,
   super(key: key);
 
   @override
@@ -63,10 +61,11 @@ class LoginPageState extends State<LoginPage> {
         child: BlocBuilder<LoginBloc, LoginState> (
           builder: (context, loginState) {
             if (loginState.isFailure) {
-              print('Failed');
+              print('Login Failed');
             } else if (loginState.isSubmitting) {
               print('Logging in');
             } else if (loginState.isSuccess) {
+              print('Logged In');
               BlocProvider.of<AuthenticationLoginBloc>(context).add(AuthenticationEventLoggedIn());
             }
             return Padding(
