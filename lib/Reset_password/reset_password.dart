@@ -23,10 +23,7 @@ class ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   void initState() {
     super.initState();
-    _resetPasswordBloc = BlocProvider.of<ResetPasswordBloc>(context);
-    forgotPasswordController.addListener(() {
-      _resetPasswordBloc.add(ResetPasswordEmailChangedEvent(email: forgotPasswordController.text));
-    });
+    _resetPasswordBloc = ResetPasswordBloc(authRepo: authRepository);
   }
   
   @override

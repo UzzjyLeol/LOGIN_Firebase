@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_12/Bloc/login_bloc.dart';
 import 'package:flutter_application_12/Events/login_event.dart';
+import 'package:flutter_application_12/Repositories/auth_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
-  static Route<void> route(){
-    return MaterialPageRoute<void>(builder: (_) => const HomePage());
+  
+  @override
+  HomePageState createState() => HomePageState();
+}
+
+class HomePageState extends State<HomePage> {
+  final AuthRepository _authRepository = AuthRepository();
+  late LoginBloc _loginBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _loginBloc = LoginBloc(authRepo: _authRepository);
   }
 
   @override
@@ -15,20 +27,23 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('HomeScreen'),
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: ElevatedButton(
-            onPressed: (){
-              BlocProvider.of<LoginBloc>(context).add(LogoutRequested());
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-            ),
-            child: const Text('Sign Out'),
-            ),
+      body: BlocProvider<LoginBloc>(
+        create: (BuildContext context) => LoginBloc(authRepo: _authRepository),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: ElevatedButton(
+              onPressed: (){
+                _loginBloc.add(LogoutRequestedEvent());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+              ),
+              child: const Text('Sign Out'),
+              ),
+          ),
         ),
       ),
     );

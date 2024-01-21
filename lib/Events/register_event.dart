@@ -25,15 +25,23 @@ class SignUpPasswordChangedEvent extends RegisterEvent {
 
 }
 
-class SignUpWithEmailAndPassword extends RegisterEvent{
+class SignUpWithEmailAndPasswordEvent extends RegisterEvent{
   final String email;
   final String password;
 
-  SignUpWithEmailAndPassword({required this.email,required  this.password});
+  SignUpWithEmailAndPasswordEvent({required this.email,required  this.password});
   
   @override
   // TODO: implement props
   List<Object?> get props => [email, password];
   @override
   String toString() => 'Submitted {email :$email, password:$password}';
+}
+
+class SignUpEventInit extends RegisterEvent {
+  SignUpEventInit();
+  
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
 }

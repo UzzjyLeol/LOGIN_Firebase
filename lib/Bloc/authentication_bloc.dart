@@ -29,7 +29,13 @@ class AuthenticationLoginBloc extends Bloc<AuthenticationEvent,AuthenticationSta
   }
 
   Future<void> _onAuthenticationEventInit(AuthenticationEvent authEvent, Emitter<AuthenticationState> emit) async {
-    emit(AuthenticationStateInit());
+    final isSignedIn = await authRepository.isSignedIn();
+    if (isSignedIn) {
+      final firebaseUser = await authRepository.getUser();
+      emit(AuthenticationStateSuccess(firebaseUser: firebaseUser));
+    } else {
+      emit(AuthenticationStateFailure());
+    }
   }
 
   Future<void> _onAuthenticationEventLoggedIn(AuthenticationEvent authEvent, Emitter<AuthenticationState> emit) async {

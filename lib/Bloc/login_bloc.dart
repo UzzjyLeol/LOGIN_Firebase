@@ -10,23 +10,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginWithEmailAndPasswordEvent>(_onLoginWithEmailAndPassword);
     on<LoginEmailChangedEvent>(_onLoginEmailChanged);
     on<LoginPasswordChangedEvent>(_onLoginPasswordChanged);
+    on<LogoutRequestedEvent>(_onLogout);
   }
 
   // @override
-  Stream<LoginState> mapEventToState(LoginEvent loginEvent) async* {
-    if (loginEvent is LoginEmailChangedEvent) {
-      yield state.copyAndUpdate(isValiEmail: Validator.isValidEmail(loginEvent.email),);
-    } else if(loginEvent is LoginPasswordChangedEvent) {
-      yield state.copyAndUpdate(isValidPassword: Validator.isValidPassword(loginEvent.password));
-    } else if (loginEvent is LoginWithEmailAndPasswordEvent) {
-      try {
-        await authRepo.signIn(email: loginEvent.email, password: loginEvent.password);
-        yield LoginState.success();
-      } catch(_) {
-        yield LoginState.failure();
-      }
-    }
-  }
+  // Stream<LoginState> mapEventToState(LoginEvent loginEvent) async* {
+  //   if (loginEvent is LoginEmailChangedEvent) {
+  //     yield state.copyAndUpdate(isValiEmail: Validator.isValidEmail(loginEvent.email),);
+  //   } else if(loginEvent is LoginPasswordChangedEvent) {
+  //     yield state.copyAndUpdate(isValidPassword: Validator.isValidPassword(loginEvent.password));
+  //   } else if (loginEvent is LoginWithEmailAndPasswordEvent) {
+  //     try {
+  //       await authRepo.signIn(email: loginEvent.email, password: loginEvent.password);
+  //       yield LoginState.success();
+  //     } catch(_) {
+  //       yield LoginState.failure();
+  //     }
+  //   }
+  // }
 
   Future<void> _onLoginWithEmailAndPassword(LoginWithEmailAndPasswordEvent loginWithEmailAndPasswordEvent, Emitter<LoginState> emit) async {
     emit(LoginState.loading());
@@ -35,6 +36,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(LoginState.success());
     } catch (_) {
       emit(LoginState.failure());
+    }
+  }
+
+  Future<void> _onLogout(LogoutRequestedEvent logOutEvent, Emitter<LoginState> emit) async {
+    try {
+      await authRepo.signOut();
+      emit(LoginState.init());
+    } catch (_) {
+      emit(LoginState.success());
     }
   }
 

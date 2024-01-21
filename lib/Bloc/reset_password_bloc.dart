@@ -10,7 +10,7 @@ class ResetPasswordBloc extends Bloc<ResetPasswordEvent,ResetPasswordState> {
   }
 
   Future<void> _onResetPassword(ResetPasswordWithEmailEvent resetPasswordEvent, Emitter<ResetPasswordState> emit) async {
-    emit(ResetPasswordInitState());
+    // emit(ResetPasswordInitState());
     try {
       await authRepo.resetPassword(email: resetPasswordEvent.email);
       emit(ResetPasswordSuccess());

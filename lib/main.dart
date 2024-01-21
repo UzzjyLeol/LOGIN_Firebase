@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_12/Bloc/authentication_bloc.dart';
 import 'package:flutter_application_12/Bloc/login_bloc.dart';
-import 'package:flutter_application_12/Bloc/register_bloc.dart';
-import 'package:flutter_application_12/Bloc/reset_password_bloc.dart';
+// import 'package:flutter_application_12/Bloc/register_bloc.dart';
+// import 'package:flutter_application_12/Bloc/reset_password_bloc.dart';
 import 'package:flutter_application_12/Events/authentication_event.dart';
+// import 'package:flutter_application_12/Events/register_event.dart';
 import 'package:flutter_application_12/Login/login_ui/home.dart';
 import 'package:flutter_application_12/Login/login_ui/login.dart';
 import 'package:flutter_application_12/Repositories/auth_repository.dart';
@@ -36,21 +37,17 @@ class MyApp extends StatelessWidget {
             MultiBlocProvider(providers:
             [
               BlocProvider(
-                create: (context) {
-                  final authenticationBloc = AuthenticationLoginBloc(authRepository: _authRepository);
-                  authenticationBloc.add(AuthenticationEventInit());
-                  return authenticationBloc;
-                }
+                create: (context) => AuthenticationLoginBloc(authRepository: _authRepository)..add(AuthenticationEventInit()),
               ),
-              BlocProvider(create: (context) => RegisterBloc(authRepo: _authRepository)),
-              BlocProvider(create: (context) => ResetPasswordBloc(authRepo: _authRepository)),
-              BlocProvider(create: (context) => LoginBloc(authRepo: _authRepository)),
+              // BlocProvider(create: (context) => RegisterBloc(authRepo: _authRepository)..add(SignUpEventInit()),),
+              // BlocProvider(create: (context) => ResetPasswordBloc(authRepo: _authRepository)..add()),
+              // BlocProvider(create: (context) => LoginBloc(authRepo: _authRepository)),
             ],
             child: BlocBuilder<AuthenticationLoginBloc, AuthenticationState>(
               builder: (context, authenState) {
                 if (authenState is AuthenticationStateSuccess) {
                   return const HomePage();
-                } else if (authenState is AuthenticationStateInit) {
+                } else if (authenState is AuthenticationStateFailure) {
                   return BlocProvider<LoginBloc>(
                     create: (context) => LoginBloc(authRepo: _authRepository),
                     child: LoginPage(authRepository: _authRepository,),

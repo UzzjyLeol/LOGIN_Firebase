@@ -39,8 +39,8 @@ class LoginWithEmailAndPasswordEvent extends LoginEvent {
   String toString() => 'LoginWithEmailAndPasswordEvent, email = $email, password = $password';
 }
 
-class LogoutRequested extends LoginEvent {
-  LogoutRequested();
+class LogoutRequestedEvent extends LoginEvent {
+  LogoutRequestedEvent();
   
   @override
   // TODO: implement props

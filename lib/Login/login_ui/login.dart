@@ -12,6 +12,7 @@ import 'package:flutter_application_12/Login/login_ui/ui/float_background.dart';
 import 'package:flutter_application_12/Login/login_ui/ui/login_guide.dart';
 import 'package:flutter_application_12/Register/register.dart';
 import 'package:flutter_application_12/Reset_password/reset_password.dart';
+import 'package:flutter_application_12/Validate/validator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 
@@ -117,7 +118,8 @@ class LoginPageState extends State<LoginPage> {
                                           TextFormField(
                                             controller: emailController,
                                             validator: (_) {
-                                              return loginState.isValidEmail ? null : 'Invalid!';
+                                              _loginBloc.add(LoginEmailChangedEvent(email: emailController.text));
+                                              return null;
                                             },
                                             textAlign: TextAlign.center,
                                             style: const TextStyle(
@@ -153,7 +155,7 @@ class LoginPageState extends State<LoginPage> {
                                           child: TextFormField(
                                               controller: passwordController,
                                               validator: (_) {
-                                                return loginState.isValidPassword ? null : 'Invalid';
+                                                return Validator.isValidPassword(passwordController.text) ? null : 'Invalid';
                                               },
                                               onChanged: (value) => context.read<LoginBloc>().add(LoginPasswordChangedEvent(password: value)),
                                               textAlign: TextAlign.center,
@@ -198,7 +200,7 @@ class LoginPageState extends State<LoginPage> {
                                       child: TextButton(
                                         onPressed: (){
                                           Navigator.push(context, MaterialPageRoute(
-                                            builder: (context) => ForgotPasswordPage()
+                                            builder: (context) => const ForgotPasswordPage()
                                             ),
                                           );
                                         },
